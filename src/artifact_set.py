@@ -1,5 +1,5 @@
 class DamageBonus:
-    def __init__(self, normal=0, charged=0, plunged=0, burst=0, elemental_geo=0, elemental_cyro=0, elemental_pyro=0,
+    def __init__(self, normal=0, charged=0, plunged=0, burst=0, elemental_geo=0, elemental_cryo=0, elemental_pyro=0,
                  elemental_hydro=0, elemental_anemo=0, elemental_electro=0,
                  physical=0, overall=0, crit_rate=0, crit_dmg=0, flat_atk=0, percentage_atk=0,
                  is_gladiator=False, is_wanderer=False):
@@ -10,7 +10,7 @@ class DamageBonus:
         self.elemental_geo = elemental_geo
         self.elemental_pyro = elemental_pyro
         self.elemental_hydro = elemental_hydro
-        self.elemental_cyro = elemental_cyro
+        self.elemental_cryo = elemental_cryo
         self.elemental_anemo = elemental_anemo
         self.elemental_electro = elemental_electro
         self.physical = physical
@@ -29,7 +29,7 @@ class DamageBonus:
                     plunged=self.plunged,
                     elemental_geo=self.elemental_geo,
                     elemental_pyro=self.elemental_pyro,
-                    elemental_cyro=self.elemental_cyro,
+                    elemental_cryo=self.elemental_cryo,
                     elemental_anemo=self.elemental_anemo,
                     elemental_hydro=self.elemental_hydro,
                     elemental_electro=self.elemental_electro,
@@ -51,7 +51,7 @@ ARTIFACT_SET_DETAILS = {
     "Archaic Petra": {2: DamageBonus(elemental_geo=15), 4: None},
     "Crimson Witch Of Flames": {2: DamageBonus(elemental_pyro=15), 4: DamageBonus(elemental_pyro=22.5)},
     "Noblesse Oblige": {2: DamageBonus(burst=20), 4: DamageBonus(percentage_atk=20)},
-    "Blizzard Strayer": {2: DamageBonus(elemental_cyro=15), 4: DamageBonus(crit_rate=20)},
+    "Blizzard Strayer": {2: DamageBonus(elemental_cryo=15), 4: DamageBonus(crit_rate=20)},
     "Heart Of Depth": {2: DamageBonus(elemental_hydro=15), 4: DamageBonus(normal=30, charged=30)},
     "Retracing Boilde": {2: None, 4: DamageBonus(normal=40, charged=40)},
     "Thunder Soother": {2: None, 4: DamageBonus(overall=35)},
@@ -67,6 +67,6 @@ ARTIFACT_PIECE_NAME = [
 ]
 
 ARTIFACT_STATS = [
-    "normal", "charged", "plunged", "burst", "elemental_geo", "elemental_cyro", "elemental_pyro", "elemental_hydro",
-    "elemental_anemo", "elemental_electro","physical", "overall", "crit_rate", "crit_dmg", "flat_atk", "percentage_atk"
+    "normal", "charged", "plunged", "burst", "elemental_geo", "elemental_cryo", "elemental_pyro", "elemental_hydro",
+    "elemental_anemo", "elemental_electro", "physical", "overall", "crit_rate", "crit_dmg", "flat_atk", "percentage_atk"
 ]

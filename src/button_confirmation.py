@@ -2,6 +2,7 @@ import collections
 import functools
 import inspect
 import textwrap
+import streamlit as st
 
 
 def cache_on_button_press(label, **cache_kwargs):
@@ -12,20 +13,7 @@ def cache_on_button_press(label, **cache_kwargs):
         The label for the button to display prior to running the cached funnction.
     cache_kwargs : Dict[Any, Any]
         Additional parameters (such as show_spinner) to pass into the underlying @st.cache decorator.
-    Example
-    -------
-    This show how you could write a username/password tester:
-    >>> @cache_on_button_press('Authenticate')
-    ... def authenticate(username, password):
-    ...     return username == "buddha" and password == "s4msara"
-    ...
-    ... username = st.text_input('username')
-    ... password = st.text_input('password')
-    ...
-    ... if authenticate(username, password):
-    ...     st.success('Logged in.')
-    ... else:
-    ...     st.error('Incorrect username or password')
+
     """
     internal_cache_kwargs = dict(cache_kwargs)
     internal_cache_kwargs['allow_output_mutation'] = True
@@ -52,7 +40,7 @@ def cache_on_button_press(label, **cache_kwargs):
                 if st.button(label):
                     cache_entry.evaluate()
                 else:
-                    raise st.ScriptRunner.StopException
+                    raise st.script_runner.StopException
             return cache_entry.return_value
 
         return wrapped_func
