@@ -1,5 +1,6 @@
 # Genshin Impact Naive Artifact Combination Finder to maximize damage
-## Run on hosted website: 
+## Run on hosted website
+https://share.streamlit.io/minhlong94/genshinartifactfinder/main.py
 ## Run on your local machine
 You must have `pip` installed
 Clone this project to your machine, then navigate to the path and execute `streamlit run main.py`:
