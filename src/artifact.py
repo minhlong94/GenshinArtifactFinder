@@ -43,10 +43,10 @@ class BaseArtifact:
                     percentage_atk=self.percentage_atk)
 
     def __repr__(self):
-        return str(self.get_stats())
+        return str({k: v for k, v in self.get_stats().items() if v != 0})
 
     def __str__(self):
-        return str(self.get_stats())
+        return self.__repr__()
 
 
 class Sand(BaseArtifact):
@@ -66,9 +66,7 @@ class Flower(BaseArtifact):
 
 
 class Feather(BaseArtifact):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.flat_atk = 311
+    pass
 
 
 class Weapon:
@@ -92,7 +90,7 @@ class Weapon:
         self.crit_rate = crit_rate
         self.crit_dmg = crit_dmg
         self.flat_atk = flat_atk
-        self.base_atk = base_atk,
+        self.base_atk = base_atk
         self.percentage_atk = percentage_atk
 
     def get_stats(self):
@@ -115,3 +113,9 @@ class Weapon:
                     flat_atk=self.flat_atk,
                     base_atk=self.base_atk,
                     percentage_atk=self.percentage_atk)
+
+    def __repr__(self):
+        return str({k: v for k, v in self.get_stats().items() if v != 0})
+
+    def __str__(self):
+        return self.__repr__()

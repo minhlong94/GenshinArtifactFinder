@@ -1,7 +1,9 @@
-WELCOME = """
+from datetime import date
+
+WELCOME = f"""
 ## Author: AerysS#5558
 
-**Last update: 27/02/2021**
+**Last update: {date.today().strftime("%d/%m/%Y")}**
 
 I make a simple best artifact finder using naive DMG calculation by this formula:
 

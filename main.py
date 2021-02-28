@@ -8,13 +8,13 @@ from functools import partial
 from hyperopt import fmin, tpe, hp, STATUS_OK, space_eval
 
 st.set_page_config(layout="wide")
-state = SessionState.get(id=99999, df=pd.DataFrame(columns=["type", "name"] + list(ARTIFACT_STATS)),
+state = SessionState.get(id=99999, df=pd.DataFrame(columns=["type", "name"] + list(ARTIFACT_STATS) + ["base_atk"]),
                          SANDS=[], GOBLETS=[], CIRCLETS=[], WEAPONS=[], FEATHERS=[], FLOWERS=[])
 st.title("GENSHIN IMPACT BEST ARTIFACT FINDER")
 with st.beta_expander("INTRODUCTION (click here to collapse)", expanded=True):
     st.markdown(WELCOME)
 
-with st.beta_expander("ARTIFACT TABLE", expanded=True):
+with st.beta_expander("ARTIFACT TABLE (click here to collapse)", expanded=True):
     state.holder = st.empty()
     state.holder.dataframe(state.df)
     state.export_table = st.button("Export table to csv")
@@ -33,8 +33,10 @@ with st.beta_expander("ARTIFACT TABLE", expanded=True):
         st.markdown(get_table_download_link(state.df), unsafe_allow_html=True)
 
 with st.sidebar:
-    st.title("Use this sidebar to input artifacts/weapons. Note: you also have to input main stats, i.e."
-             "Base ATK of weapon, ATK of feather, ATK% of Sands, etc.")
+    st.title("Use this sidebar to input artifacts/weapons.")
+    st.info("Note: you also have to input main stats, (i.e."
+            "Base ATK of weapon, Flat ATK of feather, ATK% of Sands, etc.)\n\n"
+            "You also have to input every type to have at least 1 piece, else it will throw an error.")
     state.gear_piece = st.selectbox("Artifact/Weapon piece: ", ARTIFACT_PIECE_NAME + ["Weapon"])
     if state.gear_piece == "Weapon":
         state.gear_name = st.text_input("Weapon name: ")
@@ -149,6 +151,7 @@ with st.beta_expander("VARIABLE DECLARATIONS (click here to collapse)", expanded
     state.download_variable_as_pickle = st.button("Download variable as pickle")
     if state.download_variable_as_pickle:
         st.markdown(get_variable_as_pickle(variable_dict), unsafe_allow_html=True)
+    st.write("When you finish, click the \"Find Artifact\" button in the sidebar!")
 
 
 def objective_function(space, state_obj, objective_type, dmg_type, can_use_wanderer_4, can_use_gladiator_4,
@@ -251,4 +254,5 @@ if state.find_artifact:
     objective_function(space_eval(space, best_params), state, state.DAMAGE_TYPE_1, state.DAMAGE_TYPE_2,
                        state.CAN_USE_WANDERER_4, state.CAN_USE_GLADIATOR_4, evaluate=True)
     st.write("ARTIFACT DETAILS: ")
-    st.dataframe([x.get_stats() for x in space_eval(space, best_params).values()])
+    for i in space_eval(space, best_params).values():
+        st.write(i)
