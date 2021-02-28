@@ -20,7 +20,7 @@ I use `hyperopt` to find the optimized result. However, if there are very few ar
 Limits:
 - Only works with ATK-based characters
 - Does not check if the value range is right
-- Does not check character's dmg type. For example, if you find it for Ganyu, assume that we only care about the cyro dmg output, so DO NOT PUT PHYSICAL GOBLET HERE PLEASE!
+- Does not check character's dmg type. For example, if you find it for Ganyu, assume that we only care about the cryo dmg output, so DO NOT PUT PHYSICAL GOBLET HERE PLEASE!
 - Does not consider Elemental Mastery
 - Does not consider resistance reduction
 - Does not consider some (useless/underwhelming/hard to do) stats:

@@ -2,64 +2,22 @@ import pandas as pd
 import streamlit as st
 from src.artifact import *
 from src.string_data import *
-from src.button_confirmation import *
 from src import SessionState
 from src.artifact_set import ARTIFACT_SET_DETAILS, ARTIFACT_PIECE_NAME, ARTIFACT_STATS
 from functools import partial
 from hyperopt import fmin, tpe, hp, STATUS_OK, space_eval
 
-state = SessionState.get(df=pd.DataFrame(columns=["type", "name"] + list(ARTIFACT_STATS)),
+st.set_page_config(layout="wide")
+state = SessionState.get(id=99999, df=pd.DataFrame(columns=["type", "name"] + list(ARTIFACT_STATS)),
                          SANDS=[], GOBLETS=[], CIRCLETS=[], WEAPONS=[], FEATHERS=[], FLOWERS=[])
-
 st.title("GENSHIN IMPACT BEST ARTIFACT FINDER")
 with st.beta_expander("INTRODUCTION (click here to collapse)", expanded=True):
     st.markdown(WELCOME)
 
-with st.sidebar:
-    st.title("Use this sidebar to input artifacts.")
-    state.artifact_set = st.selectbox("Artifact set: ", list(ARTIFACT_SET_DETAILS.keys()))
-    state.artifact_piece = st.selectbox("Artifact piece: ", ARTIFACT_PIECE_NAME)
-    state.artifact = eval(state.artifact_piece)(name=state.artifact_set)
-    state.artifact_stats = st.multiselect("Substats: ", ARTIFACT_STATS)
-    for stat in state.artifact_stats:
-        var = st.number_input(f"{stat}: ")
-        setattr(state.artifact, stat, var)
-    state.confirm_add_artifact = st.button("Add artifact")
-
-    if state.confirm_add_artifact:
-        if state.artifact_piece == "Sand":
-            state.SANDS.append(state.artifact)
-        elif state.artifact_piece == "Feather":
-            state.FEATHERS.append(state.artifact)
-        elif state.artifact_piece == "Flower":
-            state.FLOWERS.append(state.artifact)
-        elif state.artifact_piece == "Circlet":
-            state.CIRCLETS.append(state.artifact)
-        elif state.artifact_piece == "Goblet":
-            state.GOBLETS.append(state.artifact)
-        # elif state.artifact_set == "Weapon":
-        #     state.WEAPONS.append(state.artifact)
-
-        state.df = state.df.append(state.artifact.get_stats(), ignore_index=True)
-        state.holder.dataframe(state.df)
-
-    with st.beta_expander("Click here to remove a row"):
-        st.info("Use this below part to remove a row from the table, based on index")
-        state.index_to_remove = st.selectbox("Index to remove:", state.df.index)
-        state.confirm_remove = st.button("Remove")
-        if state.confirm_remove:
-            state.df = state.df.drop([state.index_to_remove]).reset_index(drop=True)
-            state.holder.dataframe(state.df)
-    with st.beta_expander("Click here to reset the table"):
-        st.info("Use the Reset button to reset the table")
-        state.confirm_reset_df = st.button("Reset table")
-        if state.confirm_reset_df:
-            state.df = pd.DataFrame(columns=["type", "name"] + list(ARTIFACT_STATS))
-            state.holder.dataframe(state.df)
-
-with st.beta_expander("ARTIFACT TABLE (click here to collapse)", expanded=True):
+with st.beta_expander("ARTIFACT TABLE"):
+    state.holder = st.empty()
+    state.holder.dataframe(state.df)
     state.export_table = st.button("Export table to csv")
-    state.upload_table = st.button("Upload table")
     if state.export_table:
         def get_table_download_link(df):
             import base64
@@ -74,14 +32,57 @@ with st.beta_expander("ARTIFACT TABLE (click here to collapse)", expanded=True):
 
         st.markdown(get_table_download_link(state.df), unsafe_allow_html=True)
 
-    state.holder = st.empty()
-    state.holder.dataframe(state.df)
+with st.sidebar:
+    st.title("Use this sidebar to input artifacts/types.")
+    state.gear_piece = st.selectbox("Artifact/Weapon piece: ", ARTIFACT_PIECE_NAME + ["Weapon"])
+    if state.gear_piece == "Weapon":
+        state.gear_name = st.text_input("Weapon name: ")
+    else:
+        state.gear_name = st.selectbox("Artifact name: ", list(ARTIFACT_SET_DETAILS.keys()))
+    state.gear = eval(state.gear_piece)(name=state.gear_name)
+    state.geat_stats = st.multiselect("Substats: ", ARTIFACT_STATS)
+    for stat in state.geat_stats:
+        var = st.number_input(f"{stat}: ")
+        setattr(state.gear, stat, var)
+    state.confirm_add_gear = st.button("Add gear")
+
+    if state.confirm_add_gear:
+        if state.gear_piece == "Weapon":
+            state.WEAPONS.append(state.gear)
+        elif state.gear_piece == "Sand":
+            state.SANDS.append(state.gear)
+        elif state.gear_piece == "Feather":
+            state.FEATHERS.append(state.gear)
+        elif state.gear_piece == "Flower":
+            state.FLOWERS.append(state.gear)
+        elif state.gear_piece == "Circlet":
+            state.CIRCLETS.append(state.gear)
+        elif state.gear_piece == "Goblet":
+            state.GOBLETS.append(state.gear)
+        state.df = state.df.append(state.gear.get_stats(), ignore_index=True)
+        state.holder.dataframe(state.df)
+
+    with st.beta_expander("Click here to remove a row"):
+        st.info("Use this below part to remove a row from the table, based on index")
+        state.index_to_remove = st.selectbox("Index to remove:", state.df.index)
+        state.confirm_remove = st.button("Remove")
+        if state.confirm_remove:
+            state.df = state.df.drop([state.index_to_remove]).reset_index(drop=True)
+            state.holder.dataframe(state.df)
+
+    with st.beta_expander("Click here to reset the table"):
+        st.info("Use the Reset button to reset the table")
+        state.confirm_reset_df = st.button("Reset table")
+        if state.confirm_reset_df:
+            state.df = pd.DataFrame(columns=["type", "name"] + list(ARTIFACT_STATS))
+            state.holder.dataframe(state.df)
+
 
 with st.beta_expander("VARIABLE DECLARATIONS (click here to collapse)", expanded=True):
     st.markdown(CONST_DECLARE)
     state.BASE_ATK = st.number_input("Base ATK: ", value=284)
     state.ADDITIONAL_CRIT_RATE = st.number_input("Additional crit rate: ", value=19.4)
-    state.ADDITIONAL_CRIT_DMG = st.number_input("Additional crit daamge: ", value=50)
+    state.ADDITIONAL_CRIT_DMG = st.number_input("Additional crit damage: ", value=50)
     state.ADDITIONAL_FLAT_ATK = st.number_input("Additional flat attack: ", value=0)
     state.ADDITIONAL_PERCENTAGE_ATK = st.number_input("Additional percentage attack bonus: ", value=0)
     state.SKILL_MUL = st.number_input("Skill damage multiplier: ", value=349 + 77)
@@ -95,8 +96,50 @@ with st.beta_expander("VARIABLE DECLARATIONS (click here to collapse)", expanded
     state.CAN_USE_WANDERER_4 = st.selectbox("Can use Wanderer 4 set? ", [False, True], 0)
     state.CAN_USE_GLADIATOR_4 = st.selectbox("Can use Gladiator 4 set? ", [False, True], 0)
     state.OBJECTIVE_TYPE = st.selectbox("Objective type: ", ["normal", "charged", "plunged", "burst"], 2)
-    state.DMG_TYPE = st.selectbox("Damage type: ", ["geo", "anemo", "electro", "hydro", "cryo", "pyro", "physical"], 1)
+    state.DMG_TYPE = st.selectbox("Damage type: ", ["geo", "anemo", "electro", "hydro", "cryo", "pyro", "physical"],
+                                  1)
     state.MAX_EVALS = st.number_input("Max evals: ", value=500)
+
+    if state.variable_dict is None:
+        variable_dict = {
+            "BASE_ATK": state.BASE_ATK,
+            "ADDITIONAL_CRIT_RATE": state.ADDITIONAL_CRIT_RATE,
+            "ADDITIONAL_CRIT_DMG": state.ADDITIONAL_CRIT_DMG,
+            "ADDITIONAL_FLAT_ATK": state.ADDITIONAL_FLAT_ATK,
+            "ADDITIONAL_PERCENTAGE_ATK": state.ADDITIONAL_PERCENTAGE_ATK,
+            "SKILL_MUL": state.SKILL_MUL,
+            "ADDITIONAL_NORMAL_DMG_BONUS": state.ADDITIONAL_NORMAL_DMG_BONUS,
+            "ADDITIONAL_CHARGED_DMG_BONUS": state.ADDITIONAL_CHARGED_DMG_BONUS,
+            "ADDITIONAL_BURST_DMG_BONUS": state.ADDITIONAL_BURST_DMG_BONUS,
+            "ADDITIONAL_PLUNGED_DMG_BONUS": state.ADDITIONAL_PLUNGED_DMG_BONUS,
+            "ADDITIONAL_ELEMENTAL_DMG_BONUS": state.ADDITIONAL_ELEMENTAL_DMG_BONUS,
+            "ADDITIONAL_PHYSICAL_DMG_BONUS": state.ADDITIONAL_PHYSICAL_DMG_BONUS,
+            "ADDITIONAL_OVERALL_DMG_BONUS": state.ADDITIONAL_OVERALL_DMG_BONUS,
+            "CAN_USE_WANDERER_4": state.CAN_USE_WANDERER_4,
+            "CAN_USE_GLADIATOR_4": state.CAN_USE_GLADIATOR_4,
+            "OBJECTIVE_TYPE": state.OBJECTIVE_TYPE,
+            "DMG_TYPE": state.DMG_TYPE,
+            "MAX_EVALS": state.MAX_EVALS
+        }
+        state.variable_dict = variable_dict
+
+
+    def get_variable_as_pickle(pickle_file):
+        import base64
+        import pickle
+        """Generates a link allowing the data in a given panda dataframe to be downloaded
+        in:  dataframe
+        out: href string
+        """
+        file = pickle.dumps(pickle_file)
+        b64 = base64.b64encode(file).decode()  # some strings <-> bytes conversions necessary here
+        return f'<a href="data:file/pickle;base64,{b64}" download="variable.pickle">Click here to download csv file</a>'
+
+
+    state.download_variable_as_pickle = st.button("Download variable as pickle")
+    if state.download_variable_as_pickle:
+        st.markdown(get_variable_as_pickle(variable_dict), unsafe_allow_html=True)
+
     state.find_artifact = st.button("Find artifact!")
 
 
@@ -105,7 +148,6 @@ def objective(space, state_obj, objective_type, dmg_type, can_use_wanderer_4, ca
                       normal=0, charged=0, burst=0, plunged=0, elemental_geo=0, elemental_cryo=0,
                       elemental_hydro=0, elemental_pyro=0, elemental_anemo=0, elemental_electro=0, physical=0,
                       overall=0, is_gladiator=False, is_wanderer=False)
-    print(space)
     artifact_sets = {}
     # Get artifact sets, if any
     for _, value in space.items():
@@ -167,7 +209,7 @@ def objective(space, state_obj, objective_type, dmg_type, can_use_wanderer_4, ca
 
     DMG_TYPE_DICT = {}
     for x in ["geo", "anemo", "hydro", "pyro", "cryo", "physical"]:
-        DMG_TYPE_DICT[x] = dict(normal=0, charged=0, burst=0)
+        DMG_TYPE_DICT[x] = dict(normal=0, charged=0, burst=0, plunged=0)
     for dmg_type in ["geo", "anemo", "hydro", "pyro", "cryo", "physical"]:
         for atk_type in ["normal", "charged", "plunged", "burst"]:
             AVERAGE_DMG = (WITH_CRIT + WITHOUT_CRIT) * (dictionary[objective_type] / 100 + 1)
@@ -189,7 +231,7 @@ space = {
     "Feather": hp.choice("Feathers", state.FEATHERS),
     "Goblet": hp.choice("Goblets", state.GOBLETS),
     "Circlet": hp.choice("Circlets", state.CIRCLETS),
-    # "Weapon": hp.choice("Weapons", state.WEAPONS)
+    "Weapon": hp.choice("Weapons", state.WEAPONS)
 }
 
 if state.find_artifact:

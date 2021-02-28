@@ -1,6 +1,0 @@
-type  ,name             ,normal,charged,plunged,burst,elemental_geo,elemental_cryo,elemental_pyro,elemental_hydro,elemental_anemo,elemental_electro,physical,overall,crit_rate,crit_dmg,flat_atk,percentage_atk
-Goblet,Wanderer's Troupe,0     ,0      ,0      ,0    ,0            ,0             ,46.6          ,0              ,0              ,0                ,0       ,0      ,0        ,0       ,55.0    ,0
-Goblet,Wanderer's Troupe,0     ,0      ,0      ,0    ,0            ,0             ,46.6          ,0              ,0              ,0                ,0       ,0      ,0        ,0       ,55.0    ,0
-Goblet,Thundering Fury  ,0     ,0      ,0      ,0    ,0            ,0             ,46.6          ,0              ,0              ,0                ,0       ,0      ,0        ,0       ,55.0    ,0
-Goblet,Thundering Fury  ,0     ,0      ,0      ,0    ,0            ,0             ,46.6          ,0              ,0              ,0                ,0       ,0      ,0        ,0       ,55.0    ,0
-Goblet,Retracing Boilde ,0     ,0      ,0      ,0    ,0            ,0             ,46.6          ,0              ,0              ,0                ,0       ,0      ,0        ,0       ,55.0    ,0
