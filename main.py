@@ -14,7 +14,7 @@ st.title("GENSHIN IMPACT BEST ARTIFACT FINDER")
 with st.beta_expander("INTRODUCTION (click here to collapse)", expanded=True):
     st.markdown(WELCOME)
 
-with st.beta_expander("ARTIFACT TABLE"):
+with st.beta_expander("ARTIFACT TABLE", expanded=True):
     state.holder = st.empty()
     state.holder.dataframe(state.df)
     state.export_table = st.button("Export table to csv")
@@ -45,6 +45,8 @@ with st.sidebar:
         var = st.number_input(f"{stat}: ")
         setattr(state.gear, stat, var)
     state.confirm_add_gear = st.button("Add gear")
+    with st.beta_expander("Click here to run!", expanded=True):
+        state.find_artifact = st.button("Find artifact!")
 
     if state.confirm_add_gear:
         if state.gear_piece == "Weapon":
@@ -76,7 +78,9 @@ with st.sidebar:
         if state.confirm_reset_df:
             state.df = pd.DataFrame(columns=["type", "name"] + list(ARTIFACT_STATS))
             state.holder.dataframe(state.df)
-
+    with st.beta_expander("Project information"):
+        st.markdown(
+            """This project is open sourced at: [GitHub](https://github.com/minhlong94/GenshinArtifactFinder)""")
 
 with st.beta_expander("VARIABLE DECLARATIONS (click here to collapse)", expanded=True):
     st.markdown(CONST_DECLARE)
@@ -95,9 +99,10 @@ with st.beta_expander("VARIABLE DECLARATIONS (click here to collapse)", expanded
     state.ADDITIONAL_OVERALL_DMG_BONUS = st.number_input("Additional overall damage bonus: ", value=0)
     state.CAN_USE_WANDERER_4 = st.selectbox("Can use Wanderer 4 set? ", [False, True], 0)
     state.CAN_USE_GLADIATOR_4 = st.selectbox("Can use Gladiator 4 set? ", [False, True], 0)
-    state.OBJECTIVE_TYPE = st.selectbox("Objective type: ", ["normal", "charged", "plunged", "burst"], 2)
-    state.DMG_TYPE = st.selectbox("Damage type: ", ["geo", "anemo", "electro", "hydro", "cryo", "pyro", "physical"],
-                                  1)
+    state.DAMAGE_TYPE_1 = st.selectbox("Damage type 1: ", ["normal", "charged", "plunged", "burst"], 2)
+    state.DAMAGE_TYPE_2 = st.selectbox("Damage type 2: ",
+                                       ["geo", "anemo", "electro", "hydro", "cryo", "pyro", "physical"],
+                                       1)
     state.MAX_EVALS = st.number_input("Max evals: ", value=500)
 
     if state.variable_dict is None:
@@ -117,8 +122,8 @@ with st.beta_expander("VARIABLE DECLARATIONS (click here to collapse)", expanded
             "ADDITIONAL_OVERALL_DMG_BONUS": state.ADDITIONAL_OVERALL_DMG_BONUS,
             "CAN_USE_WANDERER_4": state.CAN_USE_WANDERER_4,
             "CAN_USE_GLADIATOR_4": state.CAN_USE_GLADIATOR_4,
-            "OBJECTIVE_TYPE": state.OBJECTIVE_TYPE,
-            "DMG_TYPE": state.DMG_TYPE,
+            "OBJECTIVE_TYPE": state.DAMAGE_TYPE_1,
+            "DMG_TYPE": state.DAMAGE_TYPE_2,
             "MAX_EVALS": state.MAX_EVALS
         }
         state.variable_dict = variable_dict
@@ -133,17 +138,17 @@ with st.beta_expander("VARIABLE DECLARATIONS (click here to collapse)", expanded
         """
         file = pickle.dumps(pickle_file)
         b64 = base64.b64encode(file).decode()  # some strings <-> bytes conversions necessary here
-        return f'<a href="data:file/pickle;base64,{b64}" download="variable.pickle">Click here to download csv file</a>'
+        return f'<a href="data:file/pickle;base64,{b64}" download="variable.pickle">Click here to download pickle ' \
+               f'file</a> '
 
 
     state.download_variable_as_pickle = st.button("Download variable as pickle")
     if state.download_variable_as_pickle:
         st.markdown(get_variable_as_pickle(variable_dict), unsafe_allow_html=True)
 
-    state.find_artifact = st.button("Find artifact!")
 
-
-def objective(space, state_obj, objective_type, dmg_type, can_use_wanderer_4, can_use_gladiator_4, evaluate=False):
+def objective_function(space, state_obj, objective_type, dmg_type, can_use_wanderer_4, can_use_gladiator_4,
+                       evaluate=False):
     dictionary = dict(crit_rate=0, crit_dmg=0, flat_atk=0, percentage_atk=0, base_atk=0,
                       normal=0, charged=0, burst=0, plunged=0, elemental_geo=0, elemental_cryo=0,
                       elemental_hydro=0, elemental_pyro=0, elemental_anemo=0, elemental_electro=0, physical=0,
@@ -217,7 +222,7 @@ def objective(space, state_obj, objective_type, dmg_type, can_use_wanderer_4, ca
 
     if evaluate:
         st.write(f"ATK: {ATK}")
-        st.write(f"STATS: {dictionary}\n")
+        st.write(f"STATS: {dictionary}")
         st.write(f"ARTIFACT SETS: {artifact_sets}")
         st.write(f"AVERAGE DMG: {DMG_TYPE_DICT[dmg_type][objective_type]}")
         return None
@@ -235,11 +240,11 @@ space = {
 }
 
 if state.find_artifact:
-    fn = partial(objective, state_obj=state, objective_type=state.OBJECTIVE_TYPE, dmg_type=state.DMG_TYPE,
+    fn = partial(objective_function, state_obj=state, objective_type=state.DAMAGE_TYPE_1, dmg_type=state.DAMAGE_TYPE_2,
                  can_use_wanderer_4=state.CAN_USE_WANDERER_4,
                  can_use_gladiator_4=state.CAN_USE_GLADIATOR_4, evaluate=False)
     best_params = fmin(fn=fn, space=space, algo=tpe.suggest, max_evals=state.MAX_EVALS)
-    objective(space_eval(space, best_params), state, state.OBJECTIVE_TYPE, state.DMG_TYPE,
-              state.CAN_USE_WANDERER_4, state.CAN_USE_GLADIATOR_4, evaluate=True)
+    objective_function(space_eval(space, best_params), state, state.DAMAGE_TYPE_1, state.DAMAGE_TYPE_2,
+                       state.CAN_USE_WANDERER_4, state.CAN_USE_GLADIATOR_4, evaluate=True)
     st.write("ARTIFACT DETAILS: ")
     st.dataframe([x.get_stats() for x in space_eval(space, best_params).values()])
