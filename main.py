@@ -33,14 +33,18 @@ with st.beta_expander("ARTIFACT TABLE", expanded=True):
         st.markdown(get_table_download_link(state.df), unsafe_allow_html=True)
 
 with st.sidebar:
-    st.title("Use this sidebar to input artifacts/types.")
+    st.title("Use this sidebar to input artifacts/weapons. Note: you also have to input main stats, i.e."
+             "Base ATK of weapon, ATK of feather, ATK% of Sands, etc.")
     state.gear_piece = st.selectbox("Artifact/Weapon piece: ", ARTIFACT_PIECE_NAME + ["Weapon"])
     if state.gear_piece == "Weapon":
         state.gear_name = st.text_input("Weapon name: ")
     else:
         state.gear_name = st.selectbox("Artifact name: ", list(ARTIFACT_SET_DETAILS.keys()))
     state.gear = eval(state.gear_piece)(name=state.gear_name)
-    state.geat_stats = st.multiselect("Substats: ", ARTIFACT_STATS)
+    if state.gear_piece == "Weapon":
+        state.geat_stats = st.multiselect("Substats: ", ARTIFACT_STATS + ["base_atk"])
+    else:
+        state.geat_stats = st.multiselect("Substats: ", ARTIFACT_STATS)
     for stat in state.geat_stats:
         var = st.number_input(f"{stat}: ")
         setattr(state.gear, stat, var)

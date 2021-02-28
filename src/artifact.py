@@ -1,7 +1,7 @@
 class BaseArtifact:
     def __init__(self, name, normal=0, charged=0, plunged=0, burst=0, elemental_geo=0, elemental_cryo=0,
                  elemental_pyro=0, elemental_hydro=0, elemental_anemo=0, elemental_electro=0,
-                 physical=0, overall=0, crit_rate=0, crit_dmg=0, flat_atk=0, percentage_atk=0):
+                 physical=0, overall=0, crit_rate=0, crit_dmg=0, flat_atk=0, base_atk=0, percentage_atk=0):
         self.name = name
         self.normal = normal
         self.charged = charged
@@ -18,6 +18,7 @@ class BaseArtifact:
         self.crit_rate = crit_rate
         self.crit_dmg = crit_dmg
         self.flat_atk = flat_atk
+        self.base_atk = base_atk
         self.percentage_atk = percentage_atk
 
     def get_stats(self):
@@ -38,6 +39,7 @@ class BaseArtifact:
                     crit_rate=self.crit_rate,
                     crit_dmg=self.crit_dmg,
                     flat_atk=self.flat_atk,
+                    base_atk=self.base_atk,
                     percentage_atk=self.percentage_atk)
 
     def __repr__(self):
@@ -73,7 +75,7 @@ class Weapon:
     def __init__(self, name, normal=0, charged=0, plunged=0, burst=0, elemental_geo=0, elemental_cryo=0,
                  elemental_pyro=0,
                  elemental_hydro=0, elemental_anemo=0, elemental_electro=0,
-                 physical=0, overall=0, crit_rate=0, crit_dmg=0, flat_atk=0, percentage_atk=0):
+                 physical=0, overall=0, crit_rate=0, crit_dmg=0, flat_atk=0, base_atk=0, percentage_atk=0):
         self.name = name
         self.normal = normal
         self.charged = charged
@@ -90,6 +92,7 @@ class Weapon:
         self.crit_rate = crit_rate
         self.crit_dmg = crit_dmg
         self.flat_atk = flat_atk
+        self.base_atk = base_atk,
         self.percentage_atk = percentage_atk
 
     def get_stats(self):
@@ -110,4 +113,5 @@ class Weapon:
                     crit_rate=self.crit_rate,
                     crit_dmg=self.crit_dmg,
                     flat_atk=self.flat_atk,
+                    base_atk=self.base_atk,
                     percentage_atk=self.percentage_atk)
